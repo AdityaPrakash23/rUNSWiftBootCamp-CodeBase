@@ -6,6 +6,7 @@ from BehaviourTask import BehaviourTask
 from body.skills.Stand import Stand
 from body.skills.WalkInLine import WalkInLine   # Not sure if this is right
 from body.skills.WalkInCircle import WalkInCircle
+from body.skills.FindBall import FindBall
 from util.Constants import FIELD_LENGTH, PENALTY_AREA_LENGTH, CENTER_CIRCLE_DIAMETER, LEDColour
 
 from util.FieldGeometry import (
@@ -21,13 +22,11 @@ from util import LedOverride
 class FieldPlayer(BehaviourTask):
     def _initialise_sub_tasks(self):
         self._sub_tasks = {
-            "Stand": Stand(self),
-            "WalkInLine": WalkInLine(self),
-            "WalkInCircle": WalkInCircle(self)
+            "FindBall": FindBall(self),
         }
 
     def _reset(self):
-        self._current_sub_task = "WalkInCircle"
+        self._current_sub_task = "FindBall"
 
     def _transition(self):
         # If you wanted to write a transition to the subtask it would go here
