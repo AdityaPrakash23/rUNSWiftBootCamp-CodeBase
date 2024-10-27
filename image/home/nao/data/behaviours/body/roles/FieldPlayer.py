@@ -71,7 +71,7 @@ DANGEROUS_BALL_THRES = 300
 DIVE_VEL_THRES = 50
 FREE_KICK_TARGET = ENEMY_GOAL_BEHIND_CENTER.add(Vector2D(0, 200))
 
-
+'''
 class FieldPlayer(BehaviourTask):
     def _initialise_sub_tasks(self):
         self._sub_tasks = {
@@ -428,3 +428,27 @@ class FieldPlayer(BehaviourTask):
         if len(get_active_player_numbers()) == 0:
             return False
         return timeSinceLastTeamBallUpdate() > 8.0  # seconds
+'''
+
+from head.HeadTrackBall import HeadTrackBall
+
+class FieldPlayer(BehaviourTask):
+    
+    
+    
+    def _initialise_sub_tasks(self):
+        self._sub_tasks = {
+            "Stand": Stand(self), 
+            "HeadTrackBall": HeadTrackBall(self)
+        }
+
+    def _reset(self):
+        self._current_sub_task = "HeadTrackBall"
+
+    def _transition(self):
+        pass
+
+    def _tick(self):
+        # Tick sub task!
+        # 
+        self._tick_sub_task()
