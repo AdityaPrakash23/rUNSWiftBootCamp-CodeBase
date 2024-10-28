@@ -44,6 +44,7 @@ from body.skills.Stand import Stand
 from body.skills.Pass import Pass
 from body.skills.WalkToPoint import WalkToPoint
 from body.skills.MoveOutOfGoaliesWay import MoveOutOfGoaliesWay
+
 from util.Constants import FIELD_LENGTH, PENALTY_AREA_LENGTH, CENTER_CIRCLE_DIAMETER, LEDColour
 from util.GameStatus import (
     in_goal_kick,
@@ -70,6 +71,33 @@ CENTER_DIVE_THRES = 200
 DANGEROUS_BALL_THRES = 300
 DIVE_VEL_THRES = 50
 FREE_KICK_TARGET = ENEMY_GOAL_BEHIND_CENTER.add(Vector2D(0, 200))
+
+from head.HeadTrackBall import HeadTrackBall
+# Play Audio
+from body.skills.PlayAudio import PlayAudio
+import os
+
+class FieldPlayer(BehaviourTask):
+    
+    def _initialise_sub_tasks(self):
+        self._sub_tasks = {
+            "Stand": Stand(self), 
+            "HeadTrackBall": HeadTrackBall(self),
+            # "PlayAudio": PlayAudio(self)
+        }
+
+    def _reset(self):
+        os.system("aplay /home/nao/data/music.wav &") # & spawn a new process
+        self._current_sub_task = "Stand"
+
+    def _transition(self):
+        pass
+
+    def _tick(self):
+        # Tick sub task!
+        # 
+        self._tick_sub_task()
+
 
 '''
 class FieldPlayer(BehaviourTask):
@@ -429,26 +457,3 @@ class FieldPlayer(BehaviourTask):
             return False
         return timeSinceLastTeamBallUpdate() > 8.0  # seconds
 '''
-
-from head.HeadTrackBall import HeadTrackBall
-
-class FieldPlayer(BehaviourTask):
-    
-    
-    
-    def _initialise_sub_tasks(self):
-        self._sub_tasks = {
-            "Stand": Stand(self), 
-            "HeadTrackBall": HeadTrackBall(self)
-        }
-
-    def _reset(self):
-        self._current_sub_task = "HeadTrackBall"
-
-    def _transition(self):
-        pass
-
-    def _tick(self):
-        # Tick sub task!
-        # 
-        self._tick_sub_task()
