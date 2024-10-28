@@ -83,7 +83,7 @@ class FieldPlayer(BehaviourTask):
         self._sub_tasks = {
             "Stand": Stand(self), 
             "HeadTrackBall": HeadTrackBall(self),
-            # "PlayAudio": PlayAudio(self)
+            "PlayAudio": PlayAudio(self)
         }
 
     def _reset(self):
@@ -91,6 +91,14 @@ class FieldPlayer(BehaviourTask):
         self._current_sub_task = "Stand"
 
     def _transition(self):
+        # if something
+        # task 1 
+        # if something
+        # task 2 
+        # if something
+        # task 3 
+        # if something
+        # task 4 
         pass
 
     def _tick(self):
