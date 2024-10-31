@@ -9,9 +9,15 @@ from util.FieldGeometry import ENEMY_GOAL_BEHIND_CENTER
 from util import LineUpDataReader
 from body.skills.WalkStraightToPose import WalkStraightToPose
 from body.skills.CircleToPose import CircleToPose
+from body.skills.RaiseArm import RaiseArm
 from body.skills.LineUp import LineUp
 from robot import Foot
 from util.ObstacleAvoidance import calculate_tangent_point
+from util.Timer import Timer
+from body.skills.CircularPath import CircularPath
+from body.skills.Stand import Stand
+
+import robot
 
 # from util import LedOverride
 # from util.Constants import LEDColour
@@ -32,15 +38,23 @@ class ApproachBall(BehaviourTask):
             "LineUp": LineUp(self),
             "CircleToPose": CircleToPose(self),
             "TangentialWalk": WalkStraightToPose(self),
+            "RaiseArm" : RaiseArm(self),
+            "CircularPath": CircularPath(self),
+            "LowerArm": Stand(self),
         }
 
     def _reset(self):
         self._current_sub_task = "Unobstructed"
 
         self.close = False
-        self.position_aligned = False  # The kick_foot's position is colinear \
+        self.position_aligned = False  # The kick_foot's position is colinear
         # with the kick_target and ball
         self.heading_aligned = False  # The robot is facing kick_target
+        self._begun_speaking = False
+        self.is_finished = False
+        self._CircleTimer = Timer(timeTarget=10000000)
+        self._armTimer = Timer(timeTarget=2500000)
+        self._speakTimer = Timer(timeTarget=6500000)
 
     # TODO: include a slow param in penalty
     def _tick(
@@ -97,7 +111,7 @@ class ApproachBall(BehaviourTask):
         toe_distance = toe_kick_position.minus(toe_pos).length()
         # Transition to the appropriate sub task
 
-        if self._current_sub_task == "LineUp":
+        if self._current_sub_task == "LineUp" and self._CircleTimer.finished():
             # If we're far away from ball,
             if tangent_length > evade_distance + EVADE_DISTANCE_MARGIN:
                 if toe_distance < tangent_length:
@@ -131,7 +145,7 @@ class ApproachBall(BehaviourTask):
             # If its closer to walk to tangent than directly to kick position
             if toe_distance > tangent_length:
                 self._current_sub_task = "TangentialWalk"
-
+                self.close = False
             # If we're close,
             elif tangent_length < evade_distance:
                 # If we're facing the correct direction,
@@ -139,7 +153,8 @@ class ApproachBall(BehaviourTask):
                     abs(angle_my_heading_to_kick_vector) < ANGLE_CLOSE
                     and abs(angle_ball_vector_to_kick_vector) < ANGLE_CLOSE
                 ):
-                    self._current_sub_task = "LineUp"
+                    self._current_sub_task = "CircularPath"
+                    self._CircleTimer.start()
 
                 # If we're not facing the correct direction,
                 else:
@@ -149,7 +164,7 @@ class ApproachBall(BehaviourTask):
             # If its closer to walk to kick position than to a tangent
             if toe_distance < tangent_length:
                 self._current_sub_task = "Unobstructed"
-
+                self.close = False
             # If we're close,
             elif tangent_length < evade_distance:
                 # If we're facing the correct direction,
@@ -157,7 +172,43 @@ class ApproachBall(BehaviourTask):
                     abs(angle_my_heading_to_kick_vector) < ANGLE_CLOSE
                     and abs(angle_ball_vector_to_kick_vector) < ANGLE_CLOSE
                 ):
-                    self._current_sub_task = "LineUp"
+                    self._current_sub_task = "CircularPath"
+                    self._CircleTimer.start()
+
+                # If we're not facing the correct direction,
+                else:
+                    self._current_sub_task = "CircleToPose"
+        # Raising Arm
+        elif self._current_sub_task == "CircularPath":
+            if self._CircleTimer.finished():  # Check if circular motion is complete
+                self._current_sub_task = "RaiseArm"  # Transition to raising the arm
+                self._armTimer.start()  # Start the arm timer
+        # Raise the ball and say
+        elif self._current_sub_task == "RaiseArm":
+            if not self._begun_speaking:
+                if self._armTimer.finished():  # Check if the arm raising duration is complete
+                    self._begun_speaking = True  # Indicate that speaking can begin
+                    robot.say("I found the ball")  # Speak the phrase
+                    self._speakTimer.start()  # Start the speaking timer
+
+            elif self._speakTimer.finished():  # Check if speaking duration is complete
+                self._current_sub_task = "LowerArm"  # Transition to lower the arm
+            
+        # Check if the ball is near and if it is circular    
+        elif self._current_sub_task == "LowerArm":
+            # If we're close,
+            if tangent_length < evade_distance:
+                # If we're facing the correct direction,
+                if (
+                    abs(angle_my_heading_to_kick_vector) < ANGLE_CLOSE
+                    and abs(angle_ball_vector_to_kick_vector) < ANGLE_CLOSE
+                ):
+                    self._current_sub_task = "CircularPath"
+                    self._CircleTimer.start()
+                # If its closer to walk to tangent than directly to kick position
+                elif toe_distance > tangent_length:
+                    self._current_sub_task = "TangentialWalk"
+                    self.close = False
 
                 # If we're not facing the correct direction,
                 else:
@@ -175,10 +226,12 @@ class ApproachBall(BehaviourTask):
             self.world.b_request.behaviourSharedData.kickNotification = True
         elif self._current_sub_task == "CircleToPose":
             self._tick_sub_task(
-                circle_centre=ball, final_heading=kick_vector.heading(), final_position=kick_position, speed=1.0
+                circle_centre=ball, final_heading=kick_vector.heading(), final_position=kick_position, left=10,speed=1.5
             )
         elif self._current_sub_task == "TangentialWalk":
             self._tick_sub_task(final_pos=tangent_point, final_heading=tangent_walk_final_heading, speed=1.0)
+        elif self._current_sub_task == "CircularPath":
+            self._tick_sub_task(radius=150)
         else:
             self._tick_sub_task()
 
