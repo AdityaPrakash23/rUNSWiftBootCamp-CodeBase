@@ -74,7 +74,7 @@ FREE_KICK_TARGET = ENEMY_GOAL_BEHIND_CENTER.add(Vector2D(0, 200))
 
 from head.HeadTrackBall import HeadTrackBall
 # Play Audio
-from body.skills.PlayAudio import PlayAudio
+from body.skills.Emote import Emote
 import os
 
 class FieldPlayer(BehaviourTask):
@@ -86,7 +86,7 @@ class FieldPlayer(BehaviourTask):
         self._sub_tasks = {
             "Stand": Stand(self), 
             "HeadTrackBall": HeadTrackBall(self),
-            "PlayAudio": PlayAudio(self)
+            "Emote": Emote(self)
         }
 
 
@@ -100,9 +100,13 @@ class FieldPlayer(BehaviourTask):
         # task 1
         if sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Left]:
             self.taskFlag = 1
+            self._current_sub_task = "Emote"
+            print("Selecting task Emote!!!!!!!!!!!!")
         # task 2 
         elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
             self.taskFlag = 2
+            self._current_sub_task = "HeadTrackBall"
+            print("Selecting task HeadTrackBall!!!!!!!!!!!!")
         # task 3
         elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left]:
             self.taskFlag = 3
@@ -112,13 +116,9 @@ class FieldPlayer(BehaviourTask):
 
         elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
             self.taskFlag = 0
-
-        if self.taskFlag == 1:
-            self._current_sub_task = "PlayAudio"
-        elif self.taskFlag == 2:
-            self._current_sub_task = "HeadTrackBall"
-        elif self.taskFlag == 0:
             self._current_sub_task = "Stand"
+            print("Selecting task Stand!!!!!!!!!!!!")
+
 
     def _tick(self):
         # Tick sub task!
