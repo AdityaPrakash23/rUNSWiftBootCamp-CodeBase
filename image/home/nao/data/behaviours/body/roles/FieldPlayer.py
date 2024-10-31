@@ -79,6 +79,9 @@ import os
 
 class FieldPlayer(BehaviourTask):
     
+    taskFlag = 0 #Numbers correspond to the desired task in the list, 0 is for stand
+    lockFlag = False
+    
     def _initialise_sub_tasks(self):
         self._sub_tasks = {
             "Stand": Stand(self), 
@@ -86,20 +89,36 @@ class FieldPlayer(BehaviourTask):
             "PlayAudio": PlayAudio(self)
         }
 
+
     def _reset(self):
         os.system("aplay /home/nao/data/music.wav &") # & spawn a new process
         self._current_sub_task = "Stand"
 
+
     def _transition(self):
-        # if something
-        # task 1 
-        # if something
+        sensorValues = self.world.blackboard.motion.sensors.sensors
+        # task 1
+        if sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Left]:
+            self.taskFlag = 1
         # task 2 
-        # if something
-        # task 3 
-        # if something
-        # task 4 
-        pass
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+            self.taskFlag = 2
+        # task 3
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left]:
+            self.taskFlag = 3
+        # task 4
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+            self.taskFlag = 4
+
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+            self.taskFlag = 0
+
+        if self.taskFlag == 1:
+            self._current_sub_task = "PlayAudio"
+        elif self.taskFlag == 2:
+            self._current_sub_task = "HeadTrackBall"
+        elif self.taskFlag == 0:
+            self._current_sub_task = "Stand"
 
     def _tick(self):
         # Tick sub task!
