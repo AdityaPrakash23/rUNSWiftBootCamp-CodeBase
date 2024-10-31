@@ -122,7 +122,7 @@ class FieldPlayer(BehaviourTask):
 
     def _tick(self):
         # Tick sub task!
-        # 
+        
         self._tick_sub_task()
 
 
