@@ -44,6 +44,7 @@ from body.skills.Stand import Stand
 from body.skills.Pass import Pass
 from body.skills.WalkToPoint import WalkToPoint
 from body.skills.MoveOutOfGoaliesWay import MoveOutOfGoaliesWay
+
 from util.Constants import FIELD_LENGTH, PENALTY_AREA_LENGTH, CENTER_CIRCLE_DIAMETER, LEDColour
 from util.GameStatus import (
     in_goal_kick,
@@ -71,7 +72,61 @@ DANGEROUS_BALL_THRES = 300
 DIVE_VEL_THRES = 50
 FREE_KICK_TARGET = ENEMY_GOAL_BEHIND_CENTER.add(Vector2D(0, 200))
 
+from head.HeadTrackBall import HeadTrackBall
+# Play Audio
+from body.skills.PlayAudio import PlayAudio
+import os
 
+class FieldPlayer(BehaviourTask):
+    
+    taskFlag = 0 #Numbers correspond to the desired task in the list, 0 is for stand
+    lockFlag = False
+    
+    def _initialise_sub_tasks(self):
+        self._sub_tasks = {
+            "Stand": Stand(self), 
+            "HeadTrackBall": HeadTrackBall(self),
+            "PlayAudio": PlayAudio(self)
+        }
+
+
+    def _reset(self):
+        os.system("aplay /home/nao/data/music.wav &") # & spawn a new process
+        self._current_sub_task = "Stand"
+
+
+    def _transition(self):
+        sensorValues = self.world.blackboard.motion.sensors.sensors
+        # task 1
+        if sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Left]:
+            self.taskFlag = 1
+        # task 2 
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+            self.taskFlag = 2
+        # task 3
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left]:
+            self.taskFlag = 3
+        # task 4
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+            self.taskFlag = 4
+
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+            self.taskFlag = 0
+
+        if self.taskFlag == 1:
+            self._current_sub_task = "PlayAudio"
+        elif self.taskFlag == 2:
+            self._current_sub_task = "HeadTrackBall"
+        elif self.taskFlag == 0:
+            self._current_sub_task = "Stand"
+
+    def _tick(self):
+        # Tick sub task!
+        
+        self._tick_sub_task()
+
+
+'''
 class FieldPlayer(BehaviourTask):
     def _initialise_sub_tasks(self):
         self._sub_tasks = {
@@ -428,3 +483,4 @@ class FieldPlayer(BehaviourTask):
         if len(get_active_player_numbers()) == 0:
             return False
         return timeSinceLastTeamBallUpdate() > 8.0  # seconds
+'''
