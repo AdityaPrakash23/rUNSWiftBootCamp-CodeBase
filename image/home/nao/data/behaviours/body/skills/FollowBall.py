@@ -12,6 +12,8 @@ from body.skills.CircleToPose import CircleToPose
 from body.skills.LineUp import LineUp
 from robot import Foot
 from util.ObstacleAvoidance import calculate_tangent_point
+from util.actioncommand import raiseArm
+import robot
 
 # from util import LedOverride
 # from util.Constants import LEDColour
@@ -175,8 +177,10 @@ class ApproachBall(BehaviourTask):
             self.world.b_request.behaviourSharedData.kickNotification = True
         elif self._current_sub_task == "CircleToPose":
             self._tick_sub_task(
-                circle_centre=ball, final_heading=kick_vector.heading(), final_position=kick_position, speed=1.0
+                circle_centre=ball, final_heading=kick_vector.heading(), final_position=kick_position, left = 10, speed=1.5
             )
+            #self.world.b_request.actions.body = raiseArm()
+            #robot.say("I found the ball")
         elif self._current_sub_task == "TangentialWalk":
             self._tick_sub_task(final_pos=tangent_point, final_heading=tangent_walk_final_heading, speed=1.0)
         else:
