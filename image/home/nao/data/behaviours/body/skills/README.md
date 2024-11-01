@@ -1,8 +1,8 @@
 The repo that Team 5 has worked on is a forked repo off of UNSWComputing/rUNSWift-2024-release. The link for our repo is https://github.com/AdityaPrakash23/rUNSWiftBootCamp-CodeBase .
 
 There are 2 branches that have been worked upon. They are
-main
-origin
+- main
+- origin
 
 ## File Locations
 - The files modified as per task the alloted tasks are
