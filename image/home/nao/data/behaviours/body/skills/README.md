@@ -4,11 +4,14 @@ There are 2 branches that have been worked upon. They are
 main
 origin
 
-The files modified as per task the alloted tasks are
-Task 1 -> Emote.py, PlayAudio.py [main branch]
-Task 2 -> HeadTrackBall.py (not modified, used as it is)
-Task 3 -> PassToTeammate.py [origin Branch] (note - Fixed the direction of forward to left in CircularPath for circling side way)
-Task 4 -> ApproachBall.py, CircularPath.py,  raiseArm.pos [origin branch]
-Bonus Task -> FieldPlayer.py, TestFeetBumper.py
+## File Locations
+- The files modified as per task the alloted tasks are
 
-GitHub name - Arkar Myo (Arkar224), Aditya (AdityaPrakash23), Andrew (ProccyBoi), Rod (booleaneater) .
+* **Task 1**: Emote.py, PlayAudio.py [main branch]
+* **Task 2**: HeadTrackBall.py (not modified, used as it is)
+* **Task 3**: PassToTeammate.py [origin Branch] (note - Fixed the direction of forward to left in CircularPath for circling side way)
+* **Task 4**: ApproachBall.py, CircularPath.py,  raiseArm.pos [origin branch]
+* **Bonus Task**: FieldPlayer.py, TestFeetBumper.py
+
+## GitHub Names
+-  Arkar Myo (Arkar224), Aditya (AdityaPrakash23), Andrew (ProccyBoi), Rod (booleaneater) .
