@@ -13,7 +13,7 @@ class CircularPath(BehaviourTask):
     the tangent).
     """
 
-    def _tick(self, radius=750, left=70, clockwise=True):
+    def _tick(self, radius=750, left=70, clockwise=False):
         turn = angular_velocity(radius, left) * (-1 if clockwise else 1)
 
-        self.world.b_request.actions.body = walk(left, 0, turn)
+        self.world.b_request.actions.body = walk(150, left, turn)
