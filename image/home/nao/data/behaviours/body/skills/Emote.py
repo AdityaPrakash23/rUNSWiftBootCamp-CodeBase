@@ -1,4 +1,3 @@
-
 from BehaviourTask import BehaviourTask
 from body.skills.Walk import Walk
 from util.actioncommand import walk, stand, raiseArm
@@ -10,6 +9,8 @@ from util.MathUtil import normalisedTheta, angleSignedDiff
 from util.ObstacleAvoidance import walk_vec_with_avoidance
 from util.Timer import Timer, WallTimer, update_timer
 import os
+import time
+import robot
 
 class Emote(BehaviourTask):
     def __init__(self, parent=None, world=None):
@@ -17,13 +18,6 @@ class Emote(BehaviourTask):
 
         self.countdown = None
         
-    """
-    Description:
-    A skill that can be used to test if the calculation for walking
-    in a circle is done correct. The robot should walk in a circle
-    of given radius, at given forward speed, facing forwards (along
-    the tangent).
-    """
     def _initialise_sub_tasks(self):
         self._sub_tasks = {"Walk": Walk(self)}  # Call the subtask
 
@@ -45,14 +39,13 @@ class Emote(BehaviourTask):
         # speed, then we can assume that the robot has walked in a circle and 
         # can stop
         if not self.countdown.finished():
-            turn = av * (-1 if clockwise else 1)
-            self.world.b_request.actions.body = walk(forward, 0, turn)
+            if not self.countdown.elapsed() % (10 * 1000000) :
+                robot.say("YEAH")
+                self.world.b_request.actions.body = raiseArm()
+                time.sleep(2)
+                self.world.b_request.actions.body = stand()
+            else:
+                turn = av * (-1 if clockwise else 1)
+                self.world.b_request.actions.body = walk(forward, 0, turn)
         else:
-            self.world.b_request.actions.body = raiseArm()
             self.world.b_request.actions.body = stand()
-        
-        # ######### Could add logic to restart it ##############
-
-        # turn = angular_velocity(radius, forward) * (-1 if clockwise else 1)
-        # self.world.b_request.actions.body = walk(forward, 0, turn)
-        # self._tick_sub_task(forward, 0, turn)
