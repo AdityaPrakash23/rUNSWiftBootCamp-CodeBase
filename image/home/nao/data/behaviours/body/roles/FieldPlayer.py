@@ -91,7 +91,6 @@ class FieldPlayer(BehaviourTask):
 
 
     def _reset(self):
-        os.system("aplay /home/nao/data/music.wav &") # & spawn a new process
         self._current_sub_task = "Stand"
 
 
