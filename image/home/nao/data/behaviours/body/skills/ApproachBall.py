@@ -16,6 +16,7 @@ from util.ObstacleAvoidance import calculate_tangent_point
 from util.Timer import Timer
 from body.skills.CircularPath import CircularPath
 from body.skills.Stand import Stand
+from util.Global import ballDistance 
 
 import robot
 
@@ -24,6 +25,7 @@ import robot
 
 
 # Some values for preventing task switching, near boundary values
+BALL_CENTRE = 150 # mm
 EVADE_DISTANCE_MARGIN = 100  # mm
 ANGLE_CLOSE = radians(30)  # rad
 ANGLE_NOT_CLOSE = radians(40)  # rad
@@ -142,6 +144,7 @@ class ApproachBall(BehaviourTask):
                 self._current_sub_task = "LineUp"
 
         elif self._current_sub_task == "Unobstructed":
+            
             # If its closer to walk to tangent than directly to kick position
             if toe_distance > tangent_length:
                 self._current_sub_task = "TangentialWalk"
@@ -226,7 +229,7 @@ class ApproachBall(BehaviourTask):
             self.world.b_request.behaviourSharedData.kickNotification = True
         elif self._current_sub_task == "CircleToPose":
             self._tick_sub_task(
-                circle_centre=ball, final_heading=kick_vector.heading(), final_position=kick_position, left=10,speed=1.5
+                circle_centre=ball, final_heading=kick_vector.heading(), final_position=kick_position, speed=1.5
             )
         elif self._current_sub_task == "TangentialWalk":
             self._tick_sub_task(final_pos=tangent_point, final_heading=tangent_walk_final_heading, speed=1.0)
