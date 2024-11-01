@@ -97,23 +97,23 @@ class FieldPlayer(BehaviourTask):
     def _transition(self):
         sensorValues = self.world.blackboard.motion.sensors.sensors
         # task 1
-        if sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Left]:
+        if sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Left] and self.taskFlag != 1:
             self.taskFlag = 1
             self._current_sub_task = "Emote"
             print("Selecting task Emote!!!!!!!!!!!!")
         # task 2 
-        elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right] and self.taskFlag != 2:
             self.taskFlag = 2
             self._current_sub_task = "HeadTrackBall"
             print("Selecting task HeadTrackBall!!!!!!!!!!!!")
         # task 3
-        elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left]:
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left] and self.taskFlag != 3:
             self.taskFlag = 3
         # task 4
-        elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Right] and self.taskFlag != 4:
             self.taskFlag = 4
 
-        elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right]:
+        elif sensorValues[robot.Sensors.LFoot_Bumper_Left] and sensorValues[robot.Sensors.LFoot_Bumper_Right] and sensorValues[robot.Sensors.RFoot_Bumper_Left] and sensorValues[robot.Sensors.RFoot_Bumper_Right] and self.taskFlag != 0:
             self.taskFlag = 0
             self._current_sub_task = "Stand"
             print("Selecting task Stand!!!!!!!!!!!!")
